@@ -40,7 +40,7 @@ appsettings.*.json
 secrets.json
 .env
 .env.*
-!appsettings.json    # Keep your base config in repo if safe
+!appsettings.json
 
 # ---- Database files ----
 *.mdf
