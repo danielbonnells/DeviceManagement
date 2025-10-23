@@ -1,0 +1,121 @@
+# ---- .NET build output ----
+bin/
+obj/
+out/
+*.exe
+*.dll
+*.log
+*.pdb
+*.dbmdl
+
+# ---- User-specific files ----
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ---- Visual Studio ----
+.vs/
+.vscode/
+*.CodeCoverage
+TestResult*/
+*.ncb
+*.aps
+*.userprefs
+
+# ---- Rider / JetBrains ----
+.idea/
+*.sln.iml
+
+# ---- Build and publish artifacts ----
+/publish/
+/artifacts/
+/dist/
+
+# ---- Configuration & secrets ----
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+*.secret.json
+secrets.json
+.env
+.env.*
+!appsettings.json    # Keep your base config in repo if safe
+
+# ---- Database files ----
+*.mdf
+*.ldf
+*.sqlite
+*.db
+
+# ---- Logs ----
+*.log
+logs/
+log/
+debug.log
+npm-debug.log*
+
+# ---- Temporary files ----
+*.tmp
+*.bak
+*.cache
+*.swp
+*~
+~$*
+
+# ---- OS-specific files ----
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+# Linux
+*~
+
+# ---- Node / Frontend (if you have a dashboard) ----
+node_modules/
+npm-debug.log
+yarn-error.log
+/.parcel-cache
+/.next
+/.nuxt
+/build
+/dist
+coverage/
+
+# ---- Docker ----
+/docker-compose.override.yml
+*.pid
+*.seed
+*.tar
+*.log
+
+# ---- Misc ----
+*.zip
+*.7z
+*.gz
+*.tgz
+*.rar
+
+# ---- JetBrains Rider & ReSharper ----
+_ReSharper*/
+*.DotSettings.user
+
+# ---- EF Core Migrations (optional) ----
+# Uncomment next line if you don't want generated migrations tracked
+# Migrations/
+
+# ---- Sensitive keys ----
+/Keys/
+/certs/
+/private/
+/*.pem
+/*.key
+
+# ---- Python or script helpers ----
+__pycache__/
+*.pyc
