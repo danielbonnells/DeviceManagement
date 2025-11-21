@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeviceManagement.Migrations
 {
     [DbContext(typeof(DeviceContext))]
-    [Migration("20251023002035_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251121192405_AddStop5")]
+    partial class AddStop5
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,64 @@ namespace DeviceManagement.Migrations
                     b.ToTable("Devices");
                 });
 
+            modelBuilder.Entity("DeviceManagement.Models.Registration", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("TempCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UniqueId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Registrations");
+                });
+
+            modelBuilder.Entity("DeviceManagement.Models.Stop", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("DeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ParentStation")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StopId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<float>("StopLat")
+                        .HasColumnType("float");
+
+                    b.Property<float>("StopLon")
+                        .HasColumnType("float");
+
+                    b.Property<string>("StopName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StopType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceId");
+
+                    b.ToTable("Stops");
+                });
+
             modelBuilder.Entity("DeviceManagement.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -67,6 +125,7 @@ namespace DeviceManagement.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -76,13 +135,23 @@ namespace DeviceManagement.Migrations
 
             modelBuilder.Entity("DeviceManagement.Models.Device", b =>
                 {
-                    b.HasOne("DeviceManagement.Models.User", "User")
+                    b.HasOne("DeviceManagement.Models.User", null)
                         .WithMany("Devices")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.Navigation("User");
+            modelBuilder.Entity("DeviceManagement.Models.Stop", b =>
+                {
+                    b.HasOne("DeviceManagement.Models.Device", null)
+                        .WithMany("Stops")
+                        .HasForeignKey("DeviceId");
+                });
+
+            modelBuilder.Entity("DeviceManagement.Models.Device", b =>
+                {
+                    b.Navigation("Stops");
                 });
 
             modelBuilder.Entity("DeviceManagement.Models.User", b =>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeviceManagement.Migrations
 {
     [DbContext(typeof(DeviceContext))]
-    [Migration("20251023002035_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251120010715_UpdateDeviceAndAddRegistration")]
+    partial class UpdateDeviceAndAddRegistration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,6 +67,7 @@ namespace DeviceManagement.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -76,13 +77,11 @@ namespace DeviceManagement.Migrations
 
             modelBuilder.Entity("DeviceManagement.Models.Device", b =>
                 {
-                    b.HasOne("DeviceManagement.Models.User", "User")
+                    b.HasOne("DeviceManagement.Models.User", null)
                         .WithMany("Devices")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DeviceManagement.Models.User", b =>

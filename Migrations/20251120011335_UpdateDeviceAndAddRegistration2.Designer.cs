@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeviceManagement.Migrations
 {
     [DbContext(typeof(DeviceContext))]
-    [Migration("20251023002035_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251120011335_UpdateDeviceAndAddRegistration2")]
+    partial class UpdateDeviceAndAddRegistration2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,24 @@ namespace DeviceManagement.Migrations
                     b.ToTable("Devices");
                 });
 
+            modelBuilder.Entity("DeviceManagement.Models.Registration", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("TempCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UniqueId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Registrations");
+                });
+
             modelBuilder.Entity("DeviceManagement.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -67,6 +85,7 @@ namespace DeviceManagement.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -76,13 +95,11 @@ namespace DeviceManagement.Migrations
 
             modelBuilder.Entity("DeviceManagement.Models.Device", b =>
                 {
-                    b.HasOne("DeviceManagement.Models.User", "User")
+                    b.HasOne("DeviceManagement.Models.User", null)
                         .WithMany("Devices")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DeviceManagement.Models.User", b =>
