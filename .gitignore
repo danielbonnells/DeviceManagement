@@ -41,6 +41,7 @@ secrets.json
 .env
 .env.*
 !appsettings.json
+app.secrets.env
 
 # ---- Database files ----
 *.mdf

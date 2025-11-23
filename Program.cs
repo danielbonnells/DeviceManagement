@@ -98,9 +98,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
-
+// using Microsoft.IdentityModel.Logging;
+// IdentityModelEventSource.ShowPII = true;
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddEnvironmentVariables();
+//builder.Configuration.AddEnvironmentVariables();
 
 // Database
 var conStrBuilder = new MySqlConnector.MySqlConnectionStringBuilder(
@@ -110,6 +111,11 @@ var conStrBuilder = new MySqlConnector.MySqlConnectionStringBuilder(
     UserID = builder.Configuration["DATABASE_USER"]
 };
 
+// foreach (var kv in builder.Configuration.AsEnumerable())
+// {
+//     Console.WriteLine($"{kv.Key} = {kv.Value}");
+// }
+
 builder.Services.AddDbContext<DeviceContext>(options =>
     options.UseMySql(conStrBuilder.ConnectionString, ServerVersion.AutoDetect(conStrBuilder.ConnectionString))
 );
@@ -118,7 +124,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
+        var key = Encoding.UTF8.GetBytes(builder.Configuration["JWT_KEY"]!);
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
