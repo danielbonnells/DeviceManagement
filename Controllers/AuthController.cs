@@ -294,6 +294,25 @@ public class AuthController : ControllerBase
         }
     }
 
+    //Device Pre-Registration
+    [HttpPost("getCode")]
+    public async Task<IActionResult> GetCode([FromBody] RegistrationDto request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var registration = new Registration
+        {
+            UniqueId = request.UniqueId,
+            TempCode = GenerateTempCode(9, 3)
+        };
+
+        _context.Registrations.Add(registration);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { registration.UniqueId, registration.TempCode, registration.CreatedAt });
+    }
+
     // ----------------------
     // Helpers
     // ----------------------
@@ -319,6 +338,44 @@ public class AuthController : ControllerBase
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    /// <summary>
+    /// Generates a temporary registration code in a hyphenated format (e.g., "XXX-XXX-XXX").
+    /// </summary>
+    /// <param name="totalLength">The total number of characters in the code (excluding hyphens).</param>
+    /// <param name="groupSize">The number of characters per group.</param>
+    /// <returns>The generated code string.</returns>
+    public static string GenerateTempCode(int totalLength = 9, int groupSize = 3)
+    {
+        const string Chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Excludes 0, 1, I, O for clarity
+        
+        if (totalLength <= 0 || groupSize <= 0 || totalLength % groupSize != 0)
+        {
+            throw new ArgumentException("Total length must be positive and divisible by group size.");
+        }
+
+        var random = new Random();
+        var codeBuilder = new StringBuilder();
+        int groups = totalLength / groupSize;
+
+        for (int i = 0; i < groups; i++)
+        {
+            // Generate characters for one group
+            for (int j = 0; j < groupSize; j++)
+            {
+                codeBuilder.Append(Chars[random.Next(Chars.Length)]);
+            }
+
+            // Append a hyphen if it's not the last group
+            if (i < groups - 1)
+            {
+                codeBuilder.Append('-');
+            }
+        }
+
+        return codeBuilder.ToString();
+    }
+
 }
 
 // 👇 CHANGED — new request/response models

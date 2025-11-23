@@ -14,9 +14,12 @@ public class Device
         
     }
     public int Id { get; set; }
-    public string UniqueId { get; set; } = "";
-    public string Name { get; set; } = "";
+    public string UniqueId { get; set; }
+    public string Name { get; set; }
     public int UserId { get; set; }
+
+    //API Key used to access MQTT
+    public string ApiKey { get; set; }
 
     private string TimeZoneId { get; set; }
 
