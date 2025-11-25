@@ -16,4 +16,4 @@ services:
       - ~/.vsdbg:/remote_debugger:rw
     env_file:
       - ./app.secrets.env
-    network_mode: host
+    # network_mode: host

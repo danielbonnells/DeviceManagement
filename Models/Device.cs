@@ -10,8 +10,11 @@ public class Device
         TimeZoneId = "America/New_York";
     }
 
-    public void AddStop(string stopId){
-        
+    public void AddStop(Stop stop){
+        if(!Stops.Any(s => s.StopId == stop.StopId))
+        {
+            Stops.Add(stop);
+        }
     }
     public int Id { get; set; }
     public string UniqueId { get; set; }

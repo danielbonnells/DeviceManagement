@@ -18,7 +18,20 @@ public class DevicesController : ControllerBase
     public DevicesController(DeviceContext context)
     {
         _context = context;
-        
+
+    }
+
+    [Authorize]
+    [HttpGet("device")]
+    public async Task<IActionResult> GetMyDevice([FromQuery] int id)
+    {
+        var userId = int.Parse(User.Claims.First(c => c.Type == "userId").Value);
+        var device = _context.Devices.Where(d => d.UserId == userId && d.Id == id).Include(d => d.Stops).FirstOrDefault();
+        if (device == null)
+        {
+            return NotFound("You do not have any devices registerd under this ID.");
+        }
+        return Ok(device);
     }
 
     [Authorize]
@@ -41,9 +54,9 @@ public class DevicesController : ControllerBase
     //     return Ok(device);
     // }
 
-[HttpPost("register")]
-public async Task<IActionResult> RegisterDevice([FromForm] RegisterDeviceDto deviceDto)
-{
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterDevice([FromForm] RegisterDeviceDto deviceDto)
+    {
         // 1. Get the current user's ID from the JWT claim
         if (!int.TryParse(User.Claims.First(c => c.Type == "userId").Value, out int currentUserId))
         {
@@ -61,8 +74,8 @@ public async Task<IActionResult> RegisterDevice([FromForm] RegisterDeviceDto dev
         {
             return Unauthorized("Your code is incorrect, expired, or does not exist.");
         }
-        
-    
+
+
         // 2. Check if a device with this UniqueId already exists
         var existingDevice = await _context.Devices
             .Where(d => d.UniqueId == existingRegistration.UniqueId)
@@ -87,7 +100,7 @@ public async Task<IActionResult> RegisterDevice([FromForm] RegisterDeviceDto dev
 
             }
 
-            if(existingDevice.UserId == currentUserId)
+            if (existingDevice.UserId == currentUserId)
             {
                 // 3b. Device exists and belongs to the *current* user
                 // You can treat this as a success or an update. For registration, 
@@ -98,7 +111,7 @@ public async Task<IActionResult> RegisterDevice([FromForm] RegisterDeviceDto dev
                     Device = existingDevice
                 });
             }
-            
+
         }
 
         // 4. Proceed with new registration (Device is unique and not registered)
@@ -116,9 +129,41 @@ public async Task<IActionResult> RegisterDevice([FromForm] RegisterDeviceDto dev
         _context.Devices.Add(device);
         _context.Registrations.Update(existingRegistration);
 
-    await _context.SaveChangesAsync();
-    
-    // // Return 201 Created for a new resource
-    return CreatedAtAction(nameof(RegisterDevice), new { id = device.Id }, device);
-}
+        await _context.SaveChangesAsync();
+
+        // // Return 201 Created for a new resource
+        return CreatedAtAction(nameof(RegisterDevice), new { id = device.Id }, device);
+    }
+
+    [Authorize]
+    [HttpPost("add-stop")]
+    public async Task<IActionResult> AddStop([FromQuery] string stopId,[FromQuery] int deviceId)
+    {
+        if (!int.TryParse(User.Claims.First(c => c.Type == "userId").Value, out int currentUserId))
+        {
+            return Unauthorized("User ID claim is missing or invalid.");
+        }
+
+        var device = _context.Devices.Where(d => d.Id == deviceId && d.UserId == currentUserId).Include(d => d.Stops).FirstOrDefault();
+
+        if (device == null)
+        {
+            return NotFound();
+        }
+
+        if (device.UserId != currentUserId)
+        {
+            return Unauthorized();
+        }
+
+        var stop = _context.Stops.Where(s => s.StopId == stopId).FirstOrDefault();
+        
+        device.AddStop(stop);
+        _context.Devices.Update(device);
+
+        await _context.SaveChangesAsync();
+        //should trigger publish to device/<UniqueId>/settings
+        return Ok(device);
+    }
+
 }
